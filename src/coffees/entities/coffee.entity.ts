@@ -1,7 +1,8 @@
 // 📝 coffee.entity file
 
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Flavor } from './flavor.entity';
 
 @Entity()
 @ObjectType({ description: 'Coffee model' })
@@ -16,6 +17,16 @@ export class Coffee {
   @Column()
   brand: string;
 
-  @Column({type:"json"})
-  flavors: string[];
+  @JoinTable()
+  @ManyToMany(
+    type => Flavor,
+    flavor => flavor.coffees /* inverse side */,
+    {
+      cascade: true,
+    },
+  )
+  flavors?: Flavor[];
+
+  @CreateDateColumn()
+  createdAt?: Date;
 }
